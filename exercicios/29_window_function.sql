@@ -3,7 +3,8 @@ WITH pontos_dia AS (
 SELECT 
        IdCliente,
        substr(DtCriacao,1,10) AS dtDia,
-       sum(qtdePontos) AS totalPontos
+       sum(qtdePontos) AS totalPontos,
+       sum(CASE WHEN qtdePontos > 0 THEN QtdePontos ELSE 0 END) as pontosPostivos
 
 FROM transacoes
 
@@ -14,5 +15,6 @@ ORDER BY IdCliente, dtDia
 )
 
 SELECT *,
-        sum(totalPontos) OVER (PARTITION BY IdCliente ORDER BY dtDia) AS pontosAcum
+        sum(totalPontos) OVER (PARTITION BY IdCliente ORDER BY dtDia) AS pontosAcum,
+        sum(pontosPostivos) OVER (PARTITION BY IdCliente ORDER BY dtDia) AS pontosPositivosAcum
 FROM pontos_dia
